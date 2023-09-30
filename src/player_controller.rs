@@ -4,6 +4,8 @@ use bevy::{prelude::*, window::CursorGrabMode};
 use bevy_fps_controller::controller::*;
 use bevy_rapier3d::prelude::*;
 
+const SPAWN_POINT: Vec3 = Vec3::new(0.0, 1.0, 0.0);
+
 pub fn player_controller(mut commands: Commands) {
     commands.spawn((
         Collider::capsule(Vec3::Y * 0.5, Vec3::Y * 1.5, 0.5),
@@ -65,5 +67,16 @@ pub fn manage_cursor(
         for mut controller in &mut controller_query {
             controller.enable_input = false;
         }
+    }
+}
+
+pub fn respawn(mut query: Query<(&mut Transform, &mut Velocity)>) {
+    for (mut transform, mut velocity) in &mut query {
+        if transform.translation.y > -50.0 {
+            continue;
+        }
+
+        velocity.linvel = Vec3::ZERO;
+        transform.translation = SPAWN_POINT;
     }
 }
